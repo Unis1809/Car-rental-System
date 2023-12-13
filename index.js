@@ -37,28 +37,42 @@ app.get("/", async (req, res) => {
     res.render("login.ejs");
 });
 
+//Login post request
 app.post('/login', (req, res) => {
-    const { username, password } = req.body;
+    const username = req.body.username;
+    const password = req.body.password;
 
     // Query the database for the user
-    connection.query(
-        'SELECT * FROM users WHERE username = ?',
+    connection.query( 'SELECT * FROM users WHERE username = ?',
         [username],
-        (err, results) => {
-            if (err) throw err;
-
-            if (results.length > 0 && bcrypt.compareSync(password, results[0].password)) {
-                req.session.user = results[0];
-                res.redirect('/dashboard'); // sucsessful login
-            } else {
-                res.redirect('/');
-                // username or password in invalid
+        (err, users) => {
+            if (err) {
+                res.status(500).send('Error during login');
             }
-        }
-    );
+            if (users.length === 0) {
+                res.redirect('/');
+            }else{
+                var flagCheck = false
+                users.forEach((user) => {
+                    const isFound = bcrypt.compareSync(password, user.password);
+                    console.log(isFound);
+                    if (isFound){
+                        flagCheck = true
+                        req.session.user = user;
+                        res.redirect('/dashboard');
+                        return;
+                    }
+
+                });
+                if(!flagCheck) {
+                res.status(401).send('Invalid username or password');
+                }
+            }
+            
+        });
 });
 
-
+// register get request 
 app.get('/register', (req, res) => {
     res.render('register.ejs');
 });
@@ -68,7 +82,7 @@ app.post('/register', (req, res) => {  // Needed : check for email or pass valid
     const { username, password } = req.body;
 
     // Hash the password
-    const hashedPassword = bcrypt.hashSync(password, 10);
+    const hashedPassword = bcrypt.hashSync(password, 20);
 
     // Insert the new user into the database
     connection.query(
@@ -76,6 +90,7 @@ app.post('/register', (req, res) => {  // Needed : check for email or pass valid
         [username, hashedPassword],
         (err, results) => {
             if (err) throw err;
+            console.log('Hashed Password:', hashedPassword);
             res.redirect('/');
         }
     );
@@ -84,9 +99,12 @@ app.post('/register', (req, res) => {  // Needed : check for email or pass valid
 
 app.get('/dashboard', (req, res) => {
     if (req.session.user) {
-        res.send(`Welcome, ${req.session.user.username}!`);
+        const renders = {
+            username: req.session.user.username
+        }
+        res.render('welcome.ejs', renders);
     } else {
-        res.redirect('/login');
+        res.redirect('/');
     }
 });
 
