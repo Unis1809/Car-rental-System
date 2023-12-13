@@ -51,7 +51,7 @@ app.post('/login', (req, res) => {
                 req.session.user = results[0];
                 res.redirect('/dashboard'); // sucsessful login
             } else {
-                res.redirect('/login');
+                res.redirect('/');
                 // username or password in invalid
             }
         }
@@ -64,22 +64,22 @@ app.get('/register', (req, res) => {
 });
 
 
-// app.post('/register', (req, res) => {  // Needed : check for email or pass validations & check if the username is already exists
-//     const { username, password } = req.body;
+app.post('/register', (req, res) => {  // Needed : check for email or pass validations & check if the username is already exists
+    const { username, password } = req.body;
 
-//     // Hash the password
-//     const hashedPassword = bcrypt.hashSync(password, 10);
+    // Hash the password
+    const hashedPassword = bcrypt.hashSync(password, 10);
 
-//     // Insert the new user into the database
-//     connection.query(
-//         'INSERT INTO users (username, password) VALUES (?, ?)',
-//         [username, hashedPassword],
-//         (err, results) => {
-//             if (err) throw err;
-//             res.redirect('/login');
-//         }
-//     );
-// });
+    // Insert the new user into the database
+    connection.query(
+        'INSERT INTO users (username, password) VALUES (?, ?)',
+        [username, hashedPassword],
+        (err, results) => {
+            if (err) throw err;
+            res.redirect('/');
+        }
+    );
+});
 
 
 app.get('/dashboard', (req, res) => {
