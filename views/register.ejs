@@ -1,22 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/styles.css">
     <title>Register</title>
 </head>
+
 <body>
     <h2>Register</h2>
-    <form action="/register" method="post">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
+    <form action="/register" method="post" onsubmit="return validateForm()">
+        <label for="FirstName">First Name:</label>
+        <input type="text" id="FirstName" name="firstName" required>
         <br>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
+        <label for="LastName">Last Name:</label>
+        <input type="text" id="LastName" name="lastName" required>
+        <br>
+        <label for="Email">Email:</label>
+        <input type="email" id="Email" name="email" required>
+        <span class="error" id="emailError"></span>
+        <br>
+        <label for="Phone">Phone:</label>
+        <input type="tel" id="Phone" name="phone" pattern="[0-9]{10}" required>
+        <span class="error" id="phoneError"></span>
+        <br>
+        <label for="Address">Address:</label>
+        <input type="text" id="Address" name="address" required>
+        <br>
+        <label for="pass">Password:</label>
+        <input type="password" name="password" placeholder="Password" required>
         <br>
         <button type="submit">Register</button>
-        <a href="/">Login</a>
+
+
     </form>
+
+    <script>
+        function validateForm() {
+            var emailInput = document.getElementById('Email');
+            var phoneInput = document.getElementById('Phone');
+
+            // Basic email format validation
+            var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(emailInput.value)) {
+                document.getElementById('emailError').innerText = 'Invalid Email format';
+                return false;
+            } else {
+                document.getElementById('emailError').innerText = '';
+            }
+
+            // Phone number length validation
+            var phoneRegex = /^[0-9]{10}$/;
+            if (!phoneRegex.test(phoneInput.value)) {
+                document.getElementById('phoneError').innerText = 'Invalid Phone Number. Please enter a 10-digit number.';
+                return false;
+            } else {
+                document.getElementById('phoneError').innerText = '';
+            }
+
+            // Check if any field is empty
+            var inputs = document.querySelectorAll('form input');
+            for (var i = 0; i < inputs.length; i++) {
+                if (inputs[i].value.trim() === '') {
+                    alert('Please fill in all fields.');
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    </script>
 </body>
+
 </html>

@@ -21,7 +21,7 @@ const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root', 
     password: '', 
-    database: 'cardb',
+    database: 'cars_system',
 });
 
 connection.connect((err) => {
@@ -39,37 +39,47 @@ app.get("/", async (req, res) => {
 
 //Login post request
 app.post('/login', (req, res) => {
-    const username = req.body.username;
+    const email = req.body.email;
     const password = req.body.password;
 
     // Query the database for the user
-    connection.query( 'SELECT * FROM users WHERE username = ?',
-        [username],
+    connection.query(
+        'SELECT * FROM customers WHERE Email = ?',
+        [email],
         (err, users) => {
             if (err) {
                 res.status(500).send('Error during login');
+                return;
             }
-            if (users.length === 0) {
-                res.redirect('/');
-            }else{
-                var flagCheck = false
-                users.forEach((user) => {
-                    const isFound = bcrypt.compareSync(password, user.password);
-                    console.log(isFound);
-                    if (isFound){
-                        flagCheck = true
-                        req.session.user = user;
-                        res.redirect('/dashboard');
-                        return;
-                    }
 
-                });
-                if(!flagCheck) {
-                res.status(401).send('Invalid username or password');
-                }
+            if (users.length === 0) {
+                // User not found
+                res.render('login.ejs', { error: 'Invalid email or password' });
+                return;
             }
-            
+
+            var flagCheck = false
+            users.forEach((user) => {
+                console.log(user);
+                const isFound = bcrypt.compareSync(password, user.pass);
+
+                if (isFound){
+                    flagCheck = true
+                    req.session.user = user;
+                    res.redirect('/dashboard');
+                    return;
+                }
+            });
+
+        if(!flagCheck) {
+        res.status(401).send('Invalid username or password');
+        }
+
         });
+
+
+
+
 });
 
 // register get request 
@@ -79,35 +89,37 @@ app.get('/register', (req, res) => {
 
 
 app.post('/register', (req, res) => {  // Needed : check for email or pass validations & check if the username is already exists
-    const { username, password } = req.body;
+    const { firstName, lastName, email, phone, address, password } = req.body;
 
-    // Hash the password
-    const hashedPassword = bcrypt.hashSync(password, 20);
+    // Password encryption
+    const salt = bcrypt.genSaltSync(10);
+    const hashedPassword = bcrypt.hashSync(password, salt);
 
     // Insert the new user into the database
     connection.query(
-        'INSERT INTO users (username, password) VALUES (?, ?)',
-        [username, hashedPassword],
+        'INSERT INTO customers (FirstName, LastName, Email, Phone, Address, pass) VALUES (?, ?, ?, ?, ?, ?)',
+        [firstName, lastName, email, phone, address, hashedPassword],
         (err, results) => {
-            if (err) throw err;
-            console.log('Hashed Password:', hashedPassword);
+            if (err) {
+                return res.status(500).render('register.ejs', { error: 'Account already exists!' });
+            }
+            // redirect to login page
             res.redirect('/');
-        }
-    );
+        });
 });
 
 
 app.get('/dashboard', (req, res) => {
     if (req.session.user) {
         const renders = {
-            username: req.session.user.username
+            firstName: req.session.user.FirstName,
+            lastName: req.session.user.LastName
         }
         res.render('welcome.ejs', renders);
     } else {
         res.redirect('/');
     }
 });
-
 
 
 app.listen(PORT, () => {

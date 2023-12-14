@@ -8,15 +8,46 @@
 </head>
 <body>
     <h2>Login</h2>
-    <form action="/login" method="post">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
+    <form action="/login" method="post" onsubmit="return validateForm()">
+        <label for="Email">Email:</label>
+        <input type="email" id="Email" name="email" required>
+        <span class="error" id="emailError"></span>
         <br>
-        <label for="password">Password:</label>
+        <label for="pass">Password:</label>
         <input type="password" id="password" name="password" required>
         <br>
         <button type="submit">Login</button>
-        <a href="register">Register</a>
     </form>
+
+</script>
+</form>
+
+<p>Don't have an account? <a href="/register">Register here</a></p>
+
+<script>
+    function validateForm() {
+        var emailInput = document.getElementById('Email');
+
+        // Email format validation
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(emailInput.value)) {
+            document.getElementById('emailError').innerText = 'Invalid Email format';
+            return false;
+        } else {
+            document.getElementById('emailError').innerText = '';
+        }
+
+        // Check if any field is empty
+        var inputs = document.querySelectorAll('form input');
+        for (var i = 0; i < inputs.length; i++) {
+            if (inputs[i].value.trim() === '') {
+                alert('Please fill in all fields.');
+                return false;
+            }
+        }
+
+        return true;
+    }
+</script>
 </body>
 </html>
