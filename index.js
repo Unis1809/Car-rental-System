@@ -60,7 +60,6 @@ app.post('/login', (req, res) => {
 
             var flagCheck = false
             users.forEach((user) => {
-                console.log(user);
                 const isFound = bcrypt.compareSync(password, user.pass);
 
                 if (isFound){
