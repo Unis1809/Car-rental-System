@@ -64,7 +64,7 @@ app.post('/login', (req, res) => {
 
                 if (isFound){
                     flagCheck = true
-                    req.session.user = user;
+                    // req.session.user = user;
                     res.redirect('/dashboard');
                     return;
                 }
@@ -109,16 +109,33 @@ app.post('/register', (req, res) => {  // Needed : check for email or pass valid
 
 
 app.get('/dashboard', (req, res) => {
-    if (req.session.user) {
-        const renders = {
-            firstName: req.session.user.FirstName,
-            lastName: req.session.user.LastName
+    connection.query(
+        'SELECT * FROM cars',
+        (err, cars) =>{
+            if (err) {
+                res.status(500).send('Error during login');
+                return;
+            }
+            const renders = {
+                carsList : cars,
+                error : "No available cars"
+            } 
+            res.render('welcome.ejs', renders);
         }
-        res.render('welcome.ejs', renders);
-    } else {
-        res.redirect('/');
-    }
+    )
+
+    // if (req.session.user) {
+    //     const renders = {
+    //         firstName: req.session.user.FirstName,
+    //         lastName: req.session.user.LastName
+    //     }
+    //     res.render('welcome.ejs', renders);
+    // } else {
+    //     res.redirect('/');
+    // }
 });
+
+
 
 
 app.listen(PORT, () => {

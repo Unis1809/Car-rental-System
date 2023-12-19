@@ -1,26 +1,28 @@
 <%- include("header") %>
 
-<h1>Welcome <%= firstName %> <%= lastName %></h1>
-<h1>Welcome <%= firstName %> <%= lastName %></h1>
-<h1>Welcome <%= firstName %> <%= lastName %></h1>
-<h1>Welcome <%= firstName %> <%= lastName %></h1>
-<h1>Welcome <%= firstName %> <%= lastName %></h1>
-<h1>Welcome <%= firstName %> <%= lastName %></h1>
-<h1>Welcome <%= firstName %> <%= lastName %></h1>
-<h1>Welcome <%= firstName %> <%= lastName %></h1>
-<h1>Welcome <%= firstName %> <%= lastName %></h1>
-<h1>Welcome <%= firstName %> <%= lastName %></h1>
-<h1>Welcome <%= firstName %> <%= lastName %></h1>
-<h1>Welcome <%= firstName %> <%= lastName %></h1>
-<h1>Welcome <%= firstName %> <%= lastName %></h1>
-<h1>Welcome <%= firstName %> <%= lastName %></h1>
-<h1>Welcome <%= firstName %> <%= lastName %></h1>
-<h1>Welcome <%= firstName %> <%= lastName %></h1>
-<h1>Welcome <%= firstName %> <%= lastName %></h1>
-<h1>Welcome <%= firstName %> <%= lastName %></h1>
+
+<!-- The cars and their status with reservation option -->
+
+<div class="carsContainer">
+<%if(locals.carsList && carsList.length != 0){%>
+    <%carsList.forEach( (car) => { %>
+    <div class="singleCarDetails">
+    <li><%= car.Model %></li><br>
+    <li><%= car.Year %></li><br>
+    <li><%= car.PlateID %></li><br>
+    <li><%= car.Status %></li><br>
+    <li><%= car.UnitPrice %>$</li><br>
+    <img src="/car_images/<%= car.Model %>.png" alt='<%= car.Model %> image'>
+    <br><br><br>
+    </div>
+    <%})%>
+<%}else{%>
+    <li><%= error %></li>
+<%}%>
+
+</div>
 
 
-
-
+<!-- The cars and their status with reservation option -->
 
 <%- include("footer") %>
