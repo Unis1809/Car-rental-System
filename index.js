@@ -135,7 +135,16 @@ app.get('/dashboard', (req, res) => {
     // }
 });
 
+app.post('/reserve' , (req, res) => {
+    const selectedCarId = req.body.selectedCarID;
+    console.log(selectedCarId);
+    // El reservation hna ya Younis 👇
 
+    // enta delwa2ty m3ak el id beta3 el car ely user 3mlo reserve 'selectedCar'.
+    // kml enta good luck.
+
+    // El reservation hna ya Younis ☝️
+});
 
 
 app.listen(PORT, () => {
