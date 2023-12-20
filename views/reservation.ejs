@@ -1,11 +1,106 @@
-<%- include('header') %>
+<!DOCTYPE html>
+<html lang="en">
 
-<!-- El reservation hna ya Younis 👇-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Reservation</title>
+</head>
 
+<body>
 
+    <%- include('header') %>
 
+    <h1>Make a Car Reservation</h1>
 
+    <!-- Displaying the reservation date -->
+    <p>Reservation Date: <%= new Date().toLocaleDateString() %></p>
 
-<!-- El reservation hna ya Younis ☝️-->
+    <h2>Customer Details:</h2>
+    <p>Name: <%= customerDetails.FirstName %> <%= customerDetails.LastName %></p>
+    <p>Email: <%= customerDetails.Email %></p>
+    <p>Phone: <%= customerDetails.Phone %></p>
 
-<%- include('footer') %>
+    <h2>Car Details:</h2>
+    <p>Model: <%= selectedCar.Model %></p>
+    <p>Year: <%= selectedCar.Year %></p>
+    <p>Unit Price: <%= selectedCar.unitprice %> $</p>
+
+    <form action="/reservation" method="post">
+        <label for="pickupDate">Pickup Date:</label>
+        <input type="date" id="pickupDate" name="pickupDate" required><br><br>
+
+        <label for="returnDate">Return Date:</label>
+        <input type="date" id="returnDate" name="returnDate" required><br><br>
+
+        <input type="hidden" name="selectedCarID" value="<%= selectedCar.CarID %>">
+
+        <!-- Payment Method -->
+        <label for="paymentMethod">Payment Method:</label>
+        <select id="paymentMethod" name="paymentMethod"  >
+            <option value="cash">Cash</option>
+            <option value="creditCard">Credit Card</option>
+            <option value="visa">Visa</option>
+        </select><br><br>
+
+        <!-- Visa Card Number (Initially hidden) -->
+        <div id="visaDetails" style="display:none;">
+            <label for="visaNumber">Visa Card Number:</label>
+            <input type="text" id="visaNumber" name="visaNumber" placeholder="Enter Visa Card Number">
+        </div>
+
+        <h3>Total Price: <span id="totalPrice">0</span> $</h3>
+
+        <input type="hidden" id="unitPrice" value="<%= selectedCar.unitprice %>">
+        <input type="hidden" id="todayDate" value="<%= reservationDate %>">
+
+        <button type="submit">Reserve Car</button>
+    </form>
+
+    <%- include('footer') %>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const pickupDateInput = document.getElementById('pickupDate');
+            const returnDateInput = document.getElementById('returnDate');
+            const totalPriceElement = document.getElementById('totalPrice');
+            const unitPriceInput = document.getElementById('unitPrice');
+            const paymentMethodSelect = document.getElementById('paymentMethod');
+            const visaDetailsDiv = document.getElementById('visaDetails');
+
+            // Function to toggle Visa card number input based on selected payment method
+            const toggleVisaDetails = () => {
+                if (paymentMethodSelect.value === 'visa') {
+                    visaDetailsDiv.style.display = 'block';
+                } else {
+                    visaDetailsDiv.style.display = 'none';
+                }
+            };
+
+            // Initial toggle
+            toggleVisaDetails();
+
+            // Function to calculate total price
+            const calculateTotalPrice = () => {
+                const pickupDate = new Date(pickupDateInput.value);
+                const returnDate = new Date(returnDateInput.value);
+
+                if (!isNaN(pickupDate.getTime()) && !isNaN(returnDate.getTime())) {
+                    const daysDifference = (returnDate - pickupDate) / (1000 * 60 * 60 * 24);
+                    const unitPrice = parseFloat(unitPriceInput.value);
+                    const totalPrice = daysDifference * unitPrice;
+
+                    totalPriceElement.textContent = totalPrice.toFixed(2);
+                }
+            };
+
+            // Event listeners
+            pickupDateInput.addEventListener('change', calculateTotalPrice);
+            returnDateInput.addEventListener('change', calculateTotalPrice);
+            paymentMethodSelect.addEventListener('change', toggleVisaDetails);
+        });
+    </script>
+
+</body>
+
+</html>

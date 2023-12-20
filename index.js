@@ -57,6 +57,7 @@ app.post('/login', (req, res) => {
                 res.render('login.ejs', { error: 'Invalid email or password' });
                 return;
             }
+            let customerId = null;
 
             var flagCheck = false
             users.forEach((user) => {
@@ -64,6 +65,12 @@ app.post('/login', (req, res) => {
 
                 if (isFound){
                     flagCheck = true
+                    customerId = user.CustomerID;
+                    req.session.customer = {
+                        CustomerID: customerId,
+                    
+                    };
+
                     // req.session.user = user;
                     res.redirect('/dashboard');
                     return;
@@ -108,6 +115,62 @@ app.post('/register', (req, res) => {  // Needed : check for email or pass valid
 });
 
 
+
+app.get('/reservation', (req, res) => {
+    const customer = req.session.customer;
+    const selectedCarId = req.query.selectedCarID;
+    const reservationDate = new Date().toLocaleDateString(); // Assuming you want to set it to the current date
+    
+    if (!selectedCarId) {
+        res.status(400).send('No car selected for reservation');
+        return;
+    }
+
+    const customerId = req.session.customer.CustomerID;
+
+    // Fetch customer details using the customerId from the session
+    connection.query(
+        'SELECT * FROM customers WHERE CustomerID = ?',
+        [customerId],
+        (err, results) => {
+            if (err || results.length === 0) {
+                console.error('Error fetching customer details:', err);
+                res.status(500).send('Error fetching customer details');
+                return;
+            }
+
+            // Store the fetched customer details in the session
+            req.session.customerDetails = results[0];
+            
+            // Fetch car details using selectedCarId
+            connection.query(
+                'SELECT * FROM cars WHERE CarID = ?',
+                [selectedCarId],
+                (err, results) => {
+                    if (err || results.length === 0) {
+                        console.error('Error fetching car details:', err);
+                        res.status(500).send('Error fetching car details');
+                        return;
+                    }
+
+                    // Store the fetched car details in the session
+                    req.session.selectedCar = results[0];
+
+                    // Render the reservation page with the selected car details, customerDetails, and reservationDate
+                    res.render('reservation.ejs', { 
+                        customerDetails: req.session.customerDetails, 
+                        selectedCar: req.session.selectedCar,
+                        reservationDate: reservationDate
+                    });
+                }
+            );
+        }
+    );
+});
+
+
+
+
 app.get('/dashboard', (req, res) => {
     connection.query(
         'SELECT * FROM cars',
@@ -123,6 +186,7 @@ app.get('/dashboard', (req, res) => {
             res.render('welcome.ejs', renders);
         }
     )
+    
 
     // if (req.session.user) {
     //     const renders = {
@@ -135,15 +199,52 @@ app.get('/dashboard', (req, res) => {
     // }
 });
 
-app.post('/reserve' , (req, res) => {
+app.post('/reservation', (req, res) => {
     const selectedCarId = req.body.selectedCarID;
-    console.log(selectedCarId);
-    // El reservation hna ya Younis 👇
+    const { pickupDate, returnDate } = req.body;
+    
+    // Directly use the selectedCar from the session
+    const selectedCar = req.session.selectedCar;
+    if (!selectedCar) {
+        res.status(400).send('No car selected for reservation');
+        return;
+    }
 
-    // enta delwa2ty m3ak el id beta3 el car ely user 3mlo reserve 'selectedCar'.
-    // kml enta good luck.
+    const customerId = req.session.customerDetails.CustomerID;  // Assuming you have the customer's ID in the session
+    let unitprice = selectedCar.unitprice;  // Using directly from the session
 
-    // El reservation hna ya Younis ☝️
+    // Calculate the total price
+    const pickupDateObj = new Date(pickupDate);
+    const returnDateObj = new Date(returnDate);
+    const totalPrice = (returnDateObj - pickupDateObj) / (1000 * 60 * 60 * 24) * unitprice;
+
+    // Save the reservation to the database
+    connection.query(
+        'INSERT INTO Reservations (CustomerID, CarID, ReservationDate, PickupDate, ReturnDate, Status) VALUES (?, ?, CURDATE(), ?, ?, ?)',
+        [customerId, selectedCarId, pickupDate, returnDate, 'reserved', totalPrice],
+        (err, results) => {
+            if (err) {
+                console.error('Error reserving car:', err);
+                res.status(500).send('Error reserving car');
+                return;
+            }
+            
+            // Update the car's status to 'reserved'
+            connection.query(
+                'UPDATE cars SET Status = ? WHERE CarID = ?',
+                ['reserved', selectedCarId],
+                (err) => {
+                    if (err) {
+                        console.error('Error updating car status:', err);
+                        res.status(500).send('Error updating car status');
+                        return;
+                    }
+                    // Redirect to dashboard after successful reservation and status update
+                    res.redirect('/dashboard');
+                }
+            );
+        }
+    );
 });
 
 
