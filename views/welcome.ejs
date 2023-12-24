@@ -1,7 +1,6 @@
 <%- include("header") %>
 
 <!-- The cars and their status with reservation option -->
-
 <div class="carsContainer">
 <% if(locals.carsList && carsList.length != 0) { %>
     <% carsList.forEach( (car) => { %>
@@ -12,16 +11,18 @@
         <%= car.PlateID %><br>
         <%= car.unitprice %>$<br>
         <img src="/car_images/<%= car.Model %>.png" alt='<%= car.Model %> image'>
-
+        
         <!-- Display "reserve" button only if the car's status is "active" -->
-        <% if (car.Status === 'Active') { %>
+        <% if(car.Status === "Active") {%>
             <form action="/reservation" method="get">
-                <input type="hidden" name="selectedCarID" value="<%= car.CarID %>">
+                <input type="hidden" name="CarID" value="<%= car.CarID %>">
+                <input type="hidden" name="CustomerID" value="<%= customerDetails.CustomerID %>">
                 <button type="submit">Reserve</button>
             </form>
-        <% } else { %>
-            <p>Status: <%= car.Status %></p>
-        <% } %>
+
+            <% }else{%>
+                Status : <%= car.Status %>
+               <% } %>
     </div>
     <% }) %>
 <% } else { %>

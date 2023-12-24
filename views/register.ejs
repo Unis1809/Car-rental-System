@@ -22,7 +22,7 @@
         <span class="error" id="emailError"></span>
         <br>
         <label for="Phone">Phone:</label>
-        <input type="tel" id="Phone" name="phone" pattern="[0-9]{10}" required>
+        <input type="tel" id="Phone" name="phone" pattern="[0-9]{11}" required>
         <span class="error" id="phoneError"></span>
         <br>
         <label for="Address">Address:</label>
@@ -51,9 +51,9 @@
             }
 
             // Phone number length validation
-            var phoneRegex = /^[0-9]{10}$/;
+            var phoneRegex = /^[0-9]{11}$/;
             if (!phoneRegex.test(phoneInput.value)) {
-                document.getElementById('phoneError').innerText = 'Invalid Phone Number. Please enter a 10-digit number.';
+                document.getElementById('phoneError').innerText = 'Invalid Phone Number. Please enter a 11-digit number.';
                 return false;
             } else {
                 document.getElementById('phoneError').innerText = '';
