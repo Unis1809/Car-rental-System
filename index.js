@@ -111,27 +111,27 @@ app.get('/reservation', (req, res) => {
     const selectedCarId = req.query.CarID;
     const reservationDate = new Date().toLocaleDateString(); // Assuming it to the current date
 
-    // Fetch car details 
-    connection.query(
-        'SELECT * FROM cars WHERE CarID = ?',
-        [selectedCarId],
-        (err, selectedCar) => {
-            const car = selectedCar[0];
-            if (err || selectedCar.length === 0) {
-                console.error('Error fetching car details:', err);
-                res.status(500).send('Error fetching car details');
-                return;
-            }
-            req.session.car = car;
-            const customer = req.session.customer;
-            const renders = {
-                customerDetails: customer,
-                selectedCar: car,
-                reservationDate: reservationDate
-            }
-            res.render('reservation.ejs', renders);
+            // Fetch car details 
+            connection.query(
+                'SELECT * FROM cars WHERE CarID = ?',
+                [selectedCarId],
+                (err, selectedCar) => {
+                    const car = selectedCar[0];
+                    if (err || selectedCar.length === 0) {
+                        console.error('Error fetching car details:', err);
+                        res.status(500).send('Error fetching car details');
+                        return;
+                    }
+                    req.session.car = car;
+                    const customer = req.session.customer;
+                    const renders = {
+                        customerDetails: customer,
+                        selectedCar: car,
+                        reservationDate: reservationDate
+                    }
+                    res.render('reservation.ejs', renders);
 
-        });
+                });
 });
 
 
@@ -144,9 +144,9 @@ app.post('/reservation', (req, res) => {
     const pickupDate = req.body.pickupDate;
     const returnDate = req.body.returnDate;
     const status = 'reserved';
+    
 
-
-
+    
 
     // // Save the reservation to the database
     connection.query(
@@ -178,26 +178,18 @@ app.post('/reservation', (req, res) => {
 app.get('/dashboard', (req, res) => {
     const customer = req.session.customer;
     connection.query(
-        'UPDATE cars SET Status = "Active" WHERE CarID IN (SELECT CarID FROM Reservations WHERE CURDATE() > ReturnDate AND Status = "reserved")',
-        (err) => {
-            if (err) {
-                console.error('Error updating car statuses:', err);
+        'SELECT * FROM cars',
+        (err, cars) => {
+            if (err) { 
+                res.status(500).send('Error during login');
+                return;
             }
-
-            connection.query(
-                'SELECT * FROM cars',
-                (err, cars) => {
-                    if (err) {
-                        res.status(500).send('Error during login');
-                        return;
-                    }
-                    const renders = {
-                        customerDetails: customer,
-                        carsList: cars,
-                        error: "No available cars"
-                    }
-                    res.render('welcome.ejs', renders);
-                });
+            const renders = {
+                customerDetails : customer,
+                carsList: cars,
+                error: "No available cars"
+            }
+            res.render('welcome.ejs', renders);
         });
 });
 
