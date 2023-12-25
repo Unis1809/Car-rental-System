@@ -14,7 +14,7 @@
         
         <!-- Display "reserve" button only if the car's status is "active" -->
         <% if(car.Status === "Active") {%>
-            <form action="/reservation" method="get">
+            <form class="submit" action="/reservation" method="get">
                 <input type="hidden" name="CarID" value="<%= car.CarID %>">
                 <input type="hidden" name="CustomerID" value="<%= customerDetails.CustomerID %>">
                 <button type="submit">Reserve</button>
