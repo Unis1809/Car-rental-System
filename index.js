@@ -33,6 +33,7 @@ connection.connect((err) => {
     }
     console.log('Connected to MySQL as id ' + connection.threadId);
 });
+
 app.set('view engine', 'ejs');
 
 // get request for home page
@@ -80,8 +81,10 @@ app.post('/login', (req, res) => {
                 }
                 return;
             } else {
+                alert('Invalid username or password');
                 res.status(401).send('Invalid username or password');
             }
+            
             
         });
 
@@ -423,8 +426,8 @@ app.get('/admin-Register-car', isAdmin, (req, res) => {
 
 
 app.post('/admin-Register-car', isAdmin, (req, res) => {
-    const { model, year, plateid, unitprice,officeid } = req.body;
-    const status = 'active';
+    const { model, year, plateid,status, unitprice,officeid } = req.body;
+    
 
     connection.query(
         'INSERT INTO cars (Model, Year, PlateID, Status, unitprice,office_id) VALUES (?, ?, ?, ?, ?, ?)',
@@ -440,6 +443,23 @@ app.post('/admin-Register-car', isAdmin, (req, res) => {
             res.redirect('/admin-dashboard');
         }
     );
+});
+app.get('/logout', (req, res) => {
+    res.render('login'); 
+});
+
+
+app.post('/logout', (req, res) => {
+    
+    req.session.destroy((err) => {
+        if (err) {
+            console.error('Error destroying session:', err);
+            res.status(500).send('Server error');
+            return;
+        }
+        
+               res.redirect('/login');
+    });
 });
 
 

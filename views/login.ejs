@@ -114,7 +114,7 @@
         // Email format validation
         var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(emailInput.value)) {
-            document.getElementById('emailError').innerText = 'Invalid Email format';
+            alert("invalid format");
             return false;
         } else {
             document.getElementById('emailError').innerText = '';

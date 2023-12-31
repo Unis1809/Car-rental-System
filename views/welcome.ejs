@@ -1,93 +1,164 @@
-<%- include("headermyreservation") %>
-<link rel="stylesheet" href="/styles/welcome.css">
-<link rel="stylesheet" href="/css/fontawesome.css">
+<!DOCTYPE html>
+<html lang="en">
 
-<style>
-    body {
-        font-family: 'Poppins', sans-serif;
-        background-color: #f4f4f4;
-    }
+  <head>
 
-    .card-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh; /* Center vertically */
-    }
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="/images/favicon.ico">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900&display=swap" rel="stylesheet">
 
-    .card {
-        border-radius: 8px;
-        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease-in-out;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        padding: 1rem;
-        width: 220px; /* Decrease box size */
-    }
+    <title>Car Rental Website</title>
 
-    .card:hover {
-        transform: translateY(-10px);
-    }
+    <!-- Bootstrap core CSS -->
+    <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
-    .car-image {
-        height: 150px; /* Adjusted image height */
-        width: auto;
-        object-fit: contain;
-        margin-bottom: 1rem;
-    }
+    <!-- Additional CSS Files -->
+    <link rel="stylesheet" href="/css/fontawesome.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        /* Add this style block to your existing head section */
+        .book-now-button {
+        background-color: transparent;
+        color: black;
+        border: 2px solid red;
+        border-radius: 5px;
+        padding: 3px 15px; /* Adjust padding as needed */
+        text-decoration: none;
+        display: inline-block;
+        font-size: 12px;
+        margin-top: 10px; /* Adjust margin as needed */
+        cursor: pointer;
+      }
+      </style>
 
-    /* Add color classes for statuses */
-    .bg-success {
-        background-color: #28a745;
-    }
+  </head>
 
-    .bg-danger {
-        background-color: #dc3545;
-    }
 
-    .bg-warning {
-        background-color: #ffc107;
-    }
-</style>
+  <body>
 
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <h1 class="text-center mb-4">Office Details</h1>
-            <h1 class="text-center">My Reservations</h1>
-            
-            <div class="card-container">
-                <% if(carsList && carsList.length > 0) { %>
-                <% carsList.forEach((car) => { %>
-                <div class="card <% if(car.Status === 'Active' || car.Status === 'active') { %>bg-success<% } else if(car.Status === 'Inactive' || car.Status === 'inactive') { %>bg-danger<% } else { %>bg-warning<% } %>">
-                    <img src="/car_images/<%= car.Model %>.png" class="card-img-top car-image" alt="<%= car.Model %> image">
-                    <div class="card-body">
-                        <h5 class="card-title"><%= car.Model %></h5>
-                        <p class="card-text">
-                            Status: <%= car.Status %><br>
-                            Year: <%= car.Year %><br>
-                            Plate ID: <%= car.PlateID %><br>
-                            Unit Price: <%= car.unitprice %>$<br>
-                        </p>
-                        <% if(car.Status === "Active" || car.Status === "active") { %>
-                        <form action="/reservation" method="get">
-                            <input type="hidden" name="CarID" value="<%= car.CarID %>">
-                            <input type="hidden" name="CustomerID" value="<%= customerDetails.CustomerID %>">
-                            <button type="submit" class="btn btn-primary">Reserve</button>
-                        </form>
-                        <% } %>
-                        <a href="/office-details?CarID=<%= car.CarID %>" class="btn btn-secondary mt-2">Office Details</a>
-                    </div>
-                </div>
-                <% }); %>
-                <% } else { %>
-                <p class="text-center">No cars available.</p>
-                <% } %>
+    
+
+    <!-- Header -->
+    <header class="">
+        <nav class="navbar navbar-expand-lg">
+          <div class="container">
+            <a class="navbar-brand" href="/"><h2>Car Rental <em>Website</em></h2></a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+              <ul class="navbar-nav ml-auto">
+                  <li class="nav-item active">
+                      <a class="nav-link" href="/">Home
+                        <span class="sr-only">(current)</span>
+                      </a>
+                  </li> 
+                  <li class="nav-item">
+                    <a class="nav-link" href="/logout">Log Out</a>
+                </li>
+                   <!---alsearch hnaa!!!!-->
+     
+          <li class="nav-item"><a class="nav-link" href="/myreservations"> My Reservations</a></li>
+        </div>
+    </nav>
+  </header>
+
+         
+          
+   
+    <!-- Page Content -->
+    <div
+      class="page-heading about-heading header-text"
+      style="background-image: url(assets/images/heading-6-1920x500.jpg)"
+    >
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="text-content">
+              <h2>Available Cars</h2>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  <!-- Product Listings -->
+<!-- Product Listings -->
+<section class="products">
+    <div class="container">
+        <div class="row">
+            <% if(carsList && carsList.length > 0) { %>
+                <% carsList.forEach((car) => { %>
+                    <div class="col-md-4">
+                        <div class="product-item">
+                            <img src="/car_images/<%= car.Model %>.png" alt="<%= car.Model %> Image" class="product-image">
+                            <h2><%= car.Model %> <%= car.PlateID %></h2>
+                            <p>Year: <%= car.Year %></p>
+                            <p>Status: <%= car.Status %></p>
+                            <p>Price: <%= car.unitprice %> $</p>
+                            <% if(car.Status === "Active" || car.Status === "active") { %>
+                                <form action="/reservation" method="get">
+                                    <input type="hidden" name="CarID" value="<%= car.CarID %>">
+                                    <input type="hidden" name="CustomerID" value="<%= customerDetails.CustomerID %>">
+                                    <span><button class="book-now-button"   type="submit">Reserve</button></span>
+                                </form>
+                            <% } else { %>
+                                <p>This car is currently <%= car.Status %>.</p>
+                            <% } %>
+                            <a href="/office-details?CarID=<%= car.CarID %>">Office Details</a>
+                            <small>
+                  <strong title="passegengers"
+                    ><i class="fa fa-user"></i> 5</strong
+                  >
+                  &nbsp;&nbsp;&nbsp;&nbsp;
+                  <strong title="luggages"
+                    ><i class="fa fa-briefcase"></i> 4</strong
+                  >
+                  &nbsp;&nbsp;&nbsp;&nbsp;
+                  <strong title="doors"
+                    ><i class="fa fa-sign-out"></i> 4</strong
+                  >
+                  &nbsp;&nbsp;&nbsp;&nbsp;
+                  <strong title="transmission"
+                    ><i class="fa fa-cog"></i> A</strong
+                  >
+                </small>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <div class="col-md-12">
+                    <p>No cars available at the moment.</p>
+                </div>
+            <% } %>
+
         </div>
     </div>
+</section>
+<div class="col-md-12">
+    <ul class="pages">
+      <li><a href="#">1</a></li>
+      <li class="active"><a href="#">2</a></li>
+      <li><a href="#">3</a></li>
+      <li><a href="#">4</a></li>
+      <li>
+        <a href="#"><i class="fa fa-angle-double-right"></i></a>
+      </li>
+    </ul>
+  </div>
 </div>
+</div>
+</div>
+ <!-- Bootstrap core JavaScript -->
+ <script src="vendor/jquery/jquery.min.js"></script>
+ <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
-<%- include("footer") %>
+ <!-- Additional Scripts -->
+ <script src="assets/js/custom.js"></script>
+ <script src="assets/js/owl.js"></script>
+</body>
+</html>
